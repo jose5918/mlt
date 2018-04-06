@@ -23,7 +23,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
       - ./resources:/resources:rw
-    command: "/hyperkube kubelet --hostname-override=127.0.0.1 --address=0.0.0.0 --enable-server --kubeconfig=/resources/config.yaml --v=2 --fail-swap-on=false"
+    command: "/hyperkube kubelet --address=0.0.0.0 --enable-server --kubeconfig=/resources/config.yaml --v=2 --fail-swap-on=false --cluster-dns=10.0.0.1"
 
   proxy:
     image: gcr.io/google_containers/hyperkube-amd64:v1.8.5
