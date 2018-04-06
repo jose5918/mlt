@@ -67,7 +67,8 @@ class CommandTester(object):
                 self.namespace) +
             "--sort-by=.status.startTime -o json", shell=True
         ).stdout.read().decode('utf-8')
-        pods = json.loads(pods).get('items')
+        if pods:
+            pods = json.loads(pods).get('items')
         if pods:
             return pods[-1]
         else:
