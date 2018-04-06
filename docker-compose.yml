@@ -47,12 +47,12 @@ services:
       - 5000:5000
 
   test:
-    image: "mlt" 
-    depends_on:  
-      - "kubernetes" 
-      - "registry" 
-    environment: 
-      - KUBECONFIG=/usr/share/mlt/resources/config.yaml  
-    command: "sleep inf" 
+    image: "mlt"
+    depends_on:
+      - "kubernetes"
+      - "registry"
+    environment:
+      - KUBECONFIG=/usr/share/mlt/resources/config.yaml
+    command: "sleep inf"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
