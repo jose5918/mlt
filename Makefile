@@ -60,21 +60,18 @@ docker:
         --build-arg no_proxy=${no_proxy} \
         -t mlt .
 
-env-up: docker
-	docker-compose up -d
-
-env-down:
-	docker-compose down
-
-env-reset: env-down env-up
-
 # kubeflow is needed for the TFJob operator (our TF templates use this)
-test-e2e: env-up
-	docker-compose exec test ./resources/wait-port.sh kubernetes 8080
-	docker-compose exec test kubectl cluster-info
-	docker-compose exec test pip install tox
-	docker-compose exec test sh -c "cd /kubeflow && ks apply default -c kubeflow-core"
-	docker-compose exec test tox -e py2-e2e -e py3-e2e
+test-e2e: # docker
+	docker run --name mlt_test --rm mlt /bin/bash -c \
+	"pip install --upgrade pip && \
+	 pip install tox && \
+     cd /kubeflow && ks apply default -c kubeflow-core && \
+     ${EXTRA_ARGS:} tox -e py2-e2e -e py3-e2e "
+	# docker-compose exec test ./resources/wait-port.sh kubernetes 8080
+	# docker-compose exec test kubectl cluster-info
+	# docker-compose exec test pip install tox
+	# docker-compose exec test sh -c "cd /kubeflow && ks apply default -c kubeflow-core"
+	# docker-compose exec test tox -e py2-e2e -e py3-e2e
 
 # EXTRA_ARGS enables usage of other docker registries for testing
 # ex: EXTRA_ARGS=`$MLT_REGISTRY_AUTH_COMMAND` make test-e2e-no-docker
