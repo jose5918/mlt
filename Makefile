@@ -61,7 +61,7 @@ docker:
         -t mlt .
 
 # kubeflow is needed for the TFJob operator (our TF templates use this)
-test-e2e: # docker
+test-e2e: docker
 	docker run --name mlt_test --rm mlt /bin/bash -c \
 	"pip install --upgrade pip && \
 	 pip install tox && \
