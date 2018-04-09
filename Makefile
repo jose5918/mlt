@@ -62,6 +62,7 @@ docker:
 
 # kubeflow is needed for the TFJob operator (our TF templates use this)
 test-e2e: docker
+	@kubectl get crd | grep tfjobs.kubeflow.org > /dev/null 2>&1 || GITHUB_TOKEN=${GITHUB_TOKEN} ./scripts/kubeflow_install.sh
 	docker run --name mlt_test --rm mlt /bin/bash -c \
 	"pip install --upgrade pip && \
 	 pip install tox && \
@@ -78,6 +79,7 @@ test-e2e: docker
 # if you'd like to use something other than localhost:5000, also set
 # MLT_REGISTRY env var and that'll be respected by tox
 test-e2e-no-docker:
+	@kubectl get crd | grep tfjobs.kubeflow.org > /dev/null 2>&1 || GITHUB_TOKEN=${GITHUB_TOKEN} ./scripts/kubeflow_install.sh
 	@${EXTRA_ARGS:} tox -e py2-e2e -e py3-e2e
 
 clean:
