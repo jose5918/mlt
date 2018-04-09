@@ -73,6 +73,9 @@ jobs:
             # kubectl get deployment
 
             # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
+            # docker restart hung once and needed another restart; THIS IS BAD but sleep for now til we figure out why
+            # TODO: fix docker here
+            sleep 1
             sudo service docker restart
 
       - run:
