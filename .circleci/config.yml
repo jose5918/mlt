@@ -58,10 +58,14 @@ jobs:
       - run:
           name: Installing minikube
           command: |
+            # install kubectl and minikube and make available to circleci user
             curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
             curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
-            sudo minikube start --vm-driver=none
-            sudo minikube update-context
+            sudo chown -R circleci /home/circleci/.kube
+            sudo chown -R circleci /home/circleci/.minikube
+
+            minikube start --vm-driver=none
+            minikube update-context
             JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
             kubectl cluster-info
             # kubectl run circleci-example --image=nginx
