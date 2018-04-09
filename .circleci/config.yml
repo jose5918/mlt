@@ -16,8 +16,8 @@ jobs:
           name: Installing test/lint dependencies
           command: |
             # get python3 for tox
-            apt-get update
-            apt-get install -yq --no-install-recommends --fix-missing \
+            sudo apt-get update
+            sudo apt-get install -yq --no-install-recommends --fix-missing \
                 curl \
                 git \
                 make \
@@ -60,8 +60,8 @@ jobs:
           command: |
             # curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.8.4/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin/
             curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && mv minikube /usr/local/bin/
-            minikube start --vm-driver=none
-            minikube update-context
+            sudo minikube start --vm-driver=none
+            sudo minikube update-context
             JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
             kubectl cluster-info
             # kubectl run circleci-example --image=nginx
