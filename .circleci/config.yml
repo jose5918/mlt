@@ -72,6 +72,9 @@ jobs:
             # kubectl run circleci-example --image=nginx
             # kubectl get deployment
 
+            # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
+            sudo service docker restart
+
       - run:
           name: Run e2e tests
           command: |
