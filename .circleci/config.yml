@@ -4,10 +4,10 @@ jobs:
     machine: true
     environment:
       CHANGE_MINIKUBE_NONE_USER: true
-    docker:
-      - image: ubuntu:16.04
-      - image: registry:2
-        name: registry
+    # docker:
+    #   - image: ubuntu:16.04
+    #   - image: registry:2
+    #     name: registry
     working_directory: ~/repo
     steps:
       - checkout
