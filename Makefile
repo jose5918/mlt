@@ -66,7 +66,6 @@ test-e2e: docker
 	docker run --name mlt_test --rm mlt /bin/bash -c \
 	"pip install --upgrade pip && \
 	 pip install tox && \
-     cd /kubeflow && ks apply default -c kubeflow-core && \
      ${EXTRA_ARGS:} tox -e py2-e2e -e py3-e2e "
 	# docker-compose exec test ./resources/wait-port.sh kubernetes 8080
 	# docker-compose exec test kubectl cluster-info

@@ -77,6 +77,7 @@ jobs:
             # TODO: fix docker here
             sleep 1
             sudo service docker restart
+            sudo minikube start --vm-driver=none
 
       - run:
           name: Run e2e tests
