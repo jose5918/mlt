@@ -75,8 +75,9 @@ jobs:
             # vm driver of none runs into this issue: https://github.com/kubernetes/minikube/issues/1899
             # sudo -E minikube start --vm-driver kvm2
             # workaround here: https://github.com/kubernetes/minikube/issues/2575 fixes vm driver none issue
-            sudo -E minikube start --vm-driver=none --apiserver-ips 127.0.0.1 --apiserver-name localhost
-            sed -i -e '/server: https:\/\// s/https:\/\/.*:8443/https:\/\/localhost:8443/g' /home/circleci/.kube/config
+            # sudo -E minikube start --vm-driver=none --apiserver-ips 127.0.0.1 --apiserver-name localhost
+            # sed -i -e '/server: https:\/\// s/https:\/\/.*:8443/https:\/\/localhost:8443/g' /home/circleci/.kube/config
+            sudo -E minikube start --vm-driver=none
             sudo -E minikube update-context
             # sudo chown -R circleci /home/circleci/.kube
 
@@ -85,7 +86,8 @@ jobs:
 
             # TODO: why do we have to restart minikube here? Otherwise we get later on:
             # The connection to the server 10.142.0.104:8443 was refused - did you specify the right host or port?
-            # sudo minikube start --vm-driver=none
+            sleep 2
+            sudo -E minikube start --vm-driver=none
 
       - run:
           name: Run e2e tests
