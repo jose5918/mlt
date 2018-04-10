@@ -75,6 +75,7 @@ jobs:
 
             # TODO: why do we have to restart minikube here? Otherwise we get later on:
             # The connection to the server 10.142.0.104:8443 was refused - did you specify the right host or port?
+            sudo chown circleci /usr/local/bin/localkube
             minikube start --vm-driver=none
 
       - run:
