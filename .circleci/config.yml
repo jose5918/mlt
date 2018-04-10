@@ -31,7 +31,7 @@ jobs:
                 python3-setuptools \
                 python3-wheel \
                 tar
-            /usr/bin/python3 -m pip install tox
+            sudo /usr/bin/python3 -m pip install tox
 
       # - run:
       #     name: lint tests
