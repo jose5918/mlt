@@ -4,6 +4,7 @@ jobs:
     machine: true
     environment:
       CHANGE_MINIKUBE_NONE_USER: true
+      KUBECONFIG: /home/circleci/.kube/config
     # docker:
     #   - image: ubuntu:16.04
     #   - image: registry:2

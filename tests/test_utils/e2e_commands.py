@@ -57,7 +57,7 @@ class CommandTester(object):
             catalog_call = 'curl -v -u _token:{} '.format(
                 gcr_token) + '"https://gcr.io/v2/_catalog"'
         else:
-            catalog_call = 'curl --noproxy \"*\"  registry:5000/v2/_catalog'
+            catalog_call = 'curl --noproxy \"*\" localhost:5000/v2/_catalog'
         return catalog_call
 
     def _grab_latest_pod(self):
