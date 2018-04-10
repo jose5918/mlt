@@ -88,6 +88,10 @@ jobs:
             # The connection to the server 10.142.0.104:8443 was refused - did you specify the right host or port?
             sleep 2
             sudo -E minikube start --vm-driver=none
+            # SOMETIMES IT ISN'T READY YET!?...
+            # TODO: better way to check, we should loop til connection not refused? Is it something else?
+            # one time still got connection refused error
+            sleep 3
 
       - run:
           name: Run e2e tests
