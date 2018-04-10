@@ -5,12 +5,8 @@ jobs:
     environment:
       CHANGE_MINIKUBE_NONE_USER: true
       KUBECONFIG: /home/circleci/.kube/config
-    # docker:
-    #   - image: ubuntu:16.04
-    #   - image: registry:2
-    #     name: registry
     working_directory: ~/repo
-    # gets around pyenv with circleci
+    # gets around pyenv with circleci: https://discuss.circleci.com/t/testing-in-different-environments/450/12
     dependencies:
       override:
         - sudo pip install tox tox-pyenv
@@ -60,42 +56,23 @@ jobs:
       #     docker_layer_caching: true
 
       - run:
-          name: Installing minikube
+          name: Setting up hyperkube
           command: |
-            # install kubectl and minikube and make available to circleci user
-            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
-            curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+            # run etcd, kubelet, proxy
+            docker run --net=host -d quay.io/coreos/etcd:v3.2 \
+              /usr/local/bin/etcd etcd --advertise-client-urls http://0.0.0.0:2379 --listen-client-urls http://0.0.0.0:2379
+              -p 2379:2379
+            docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock \
+              gcr.io/google_containers/hyperkube-amd64:v1.8.5 \
+              /hyperkube kubelet --api_servers=http://127.0.0.1:8080 --v=2 --address=0.0.0.0 \
+              --enable_server --hostname_override=127.0.0.1 --kubeconfig=resources/config.yaml \
+              --cluster_dns=10.0.0.10 --cluster_domain=cluster.local
+            docker run -d --net=host --privileged gcr.io/google_containers/hyperkube-amd64:v1.8.5 \
+              /hyperkube proxy --master=http://127.0.0.1:8080 --v=2
 
-            # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
-            sudo service docker restart
-
-            # install kvm2 driver
-            # sudo apt install libvirt-bin qemu-kvm
-            # sudo usermod -a -G libvirtd $(whoami)
-            # newgrp libvirtd
-            # curl -LO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 && chmod +x docker-machine-driver-kvm2 && sudo mv docker-machine-driver-kvm2 /usr/bin/
-
-            # need sudo to respect minikube env var to avoid this: https://github.com/kubernetes/minikube/issues/1883
-            # vm driver of none runs into this issue: https://github.com/kubernetes/minikube/issues/1899
-            # sudo -E minikube start --vm-driver kvm2
-            # workaround here: https://github.com/kubernetes/minikube/issues/2575 fixes vm driver none issue
-            # sudo -E minikube start --vm-driver=none --apiserver-ips 127.0.0.1 --apiserver-name localhost
-            # sed -i -e '/server: https:\/\// s/https:\/\/.*:8443/https:\/\/localhost:8443/g' /home/circleci/.kube/config
-            sudo -E minikube start --vm-driver=none
-            sudo -E minikube update-context
-            # sudo chown -R circleci /home/circleci/.kube
-
-            JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
+            # set up kubectl
+            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin
             kubectl cluster-info
-
-            # TODO: why do we have to restart minikube here? Otherwise we get later on:
-            # The connection to the server 10.142.0.104:8443 was refused - did you specify the right host or port?
-            sleep 2
-            sudo -E minikube start --vm-driver=none
-            # SOMETIMES IT ISN'T READY YET!?...
-            # TODO: better way to check, we should loop til connection not refused? Is it something else?
-            # one time still got connection refused error
-            sleep 5
 
       - run:
           name: Run e2e tests
