@@ -51,39 +51,30 @@ jobs:
             curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
             tar -xz -C /tmp -f /tmp/docker-$VER.tgz
             sudo mv /tmp/docker/* /usr/bin
+            curl -L https://github.com/docker/compose/releases/download/1.16.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose  
+            chmod +x /usr/local/bin/docker-compose
 
       # - setup_remote_docker:
       #     docker_layer_caching: true
 
-      - run:
-          name: Setting up hyperkube
-          command: |
-            # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
-            sudo service docker restart
+      # - run:
+      #     name: Setting up hyperkube
+      #     command: |
+      #       # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
+      #       sudo service docker restart
 
-            # run etcd, kubelet, proxy
-            docker run --net=host -d quay.io/coreos/etcd:v3.2 \
-              /usr/local/bin/etcd etcd --advertise-client-urls http://0.0.0.0:2379 --listen-client-urls http://0.0.0.0:2379 -p 2379:2379
-            docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock \
-              gcr.io/google_containers/hyperkube-amd64:v1.8.5 \
-              /hyperkube kubelet --api_servers=http://127.0.0.1:8080 --v=2 --address=0.0.0.0 \
-              --enable_server --hostname_override=127.0.0.1 --kubeconfig=resources/config.yaml \
-              --cluster_dns=10.0.0.10 --cluster_domain=cluster.local
-            docker run -d --net=host --privileged gcr.io/google_containers/hyperkube-amd64:v1.8.5 \
-              /hyperkube proxy --master=http://127.0.0.1:8080 --v=2
-
-            # set up kubectl
-            curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.9.4/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin
-            kubectl cluster-info
-
+            
+            
       - run:
           name: Run e2e tests
           command: |
+            # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
+            sudo service docker restart
             # start local registry for use with mlt builds
             docker run -d -p 5000:5000 --restart=always --name registry registry:2
             # mlt requires git setup
-            git config --global user.email "test@example.com"
-            git config --global user.name "Test Docker User"
+            # git config --global user.email "test@example.com"
+            # git config --global user.name "Test Docker User"
             # circleci uses pyenv which won't by default have python3 available
             # pyenv global 3.5.2
             make test-e2e

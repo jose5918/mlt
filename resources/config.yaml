@@ -1,15 +1,13 @@
 apiVersion: v1
 clusters:
 - cluster:
-    server: https://localhost:8443
-  name: minikube
+    server: http://kubernetes:8080
+  name: hyperkube
 contexts:
 - context:
-    cluster: minikube
-    user: minikube
-  name: minikube
-current-context: minikube
+    cluster: hyperkube
+    user: hyperkube
+  name: hyperkube
+current-context: hyperkube
 kind: Config
 preferences: {}
-users:
-- name: minikube
