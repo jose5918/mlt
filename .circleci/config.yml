@@ -10,6 +10,11 @@ jobs:
     #   - image: registry:2
     #     name: registry
     working_directory: ~/repo
+    # gets around pyenv with circleci
+    dependencies:
+      override:
+        - python -m pip install tox tox-pyenv
+        - pyenv local 2.7.12 3.5.2
     steps:
       - checkout
 
@@ -31,7 +36,6 @@ jobs:
                 python3-setuptools \
                 python3-wheel \
                 tar
-            sudo /usr/bin/python3 -m pip install tox
 
       # - run:
       #     name: lint tests
