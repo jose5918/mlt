@@ -74,7 +74,9 @@ jobs:
             # need sudo to respect minikube env var to avoid this: https://github.com/kubernetes/minikube/issues/1883
             # vm driver of none runs into this issue: https://github.com/kubernetes/minikube/issues/1899
             # sudo -E minikube start --vm-driver kvm2
-            sudo -E minikube start --vm-driver=none
+            # workaround here: https://github.com/kubernetes/minikube/issues/2575 fixes vm driver none issue
+            sudo -E minikube start --vm-driver=none --apiserver-ips 127.0.0.1 --apiserver-name localhost
+            sed -i -e '/server: https:\/\// s/https:\/\/.*:8443/https:\/\/localhost:8443/g' ~/.kube/config
             sudo -E minikube update-context
             # sudo chown -R circleci /home/circleci/.kube
 
