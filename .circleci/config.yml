@@ -15,7 +15,6 @@ jobs:
       - run:
           name: Installing test/lint dependencies
           command: |
-            # get python3 for tox
             sudo apt-get update
             sudo apt-get install -yq --no-install-recommends --fix-missing \
                 curl \
@@ -31,7 +30,7 @@ jobs:
                 python3-setuptools \
                 python3-wheel \
                 tar
-            pip install tox
+            pip3 install tox
 
       # - run:
       #     name: lint tests
@@ -91,7 +90,7 @@ jobs:
             # SOMETIMES IT ISN'T READY YET!?...
             # TODO: better way to check, we should loop til connection not refused? Is it something else?
             # one time still got connection refused error
-            sleep 3
+            sleep 5
 
       - run:
           name: Run e2e tests
@@ -101,4 +100,6 @@ jobs:
             # mlt requires git setup
             git config --global user.email "test@example.com"
             git config --global user.name "Test Docker User"
+            # circleci uses pyenv which won't by default have python3 available
+            pyenv global 3.5.2
             make test-e2e
