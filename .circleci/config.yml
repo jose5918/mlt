@@ -65,8 +65,9 @@ jobs:
             # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
             sudo service docker restart
 
-            # need sudo to respect minikube env var
-            sudo -E minikube start --vm-driver=none
+            # need sudo to respect minikube env var to avoid this: https://github.com/kubernetes/minikube/issues/1883
+            # vm driver of none runs into this issue: https://github.com/kubernetes/minikube/issues/1899
+            sudo -E minikube start --vm-driver=kvm
             sudo -E minikube update-context
             # sudo chown -R circleci /home/circleci/.kube
 
