@@ -73,6 +73,10 @@ jobs:
             JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1; done
             kubectl cluster-info
 
+            # TODO: why do we have to restart minikube here? Otherwise we get later on:
+            # The connection to the server 10.142.0.104:8443 was refused - did you specify the right host or port?
+            minikube start --vm-driver=none
+
       - run:
           name: Run e2e tests
           command: |
