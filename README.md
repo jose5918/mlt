@@ -29,6 +29,7 @@ Prerequisites:
 - python
 - tox
 - virtualenv
+- kubectl
 - TFJob operator (for the distributed tensorflow templates)
 
 Installation:
