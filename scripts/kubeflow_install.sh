@@ -8,12 +8,12 @@ APP_NAME=kubeflow
 # by default we'll use our minikube config
 : "${KUBECONFIG:=../resources/config.yaml}"
 # workaround for https://github.com/ksonnet/ksonnet/issues/298
-USER=root
+export USER=root
 
 # pull ksonnet from web
 curl -LO https://github.com/ksonnet/ksonnet/releases/download/v0.9.2/ks_0.9.2_linux_amd64.tar.gz
 tar -xvf ks_0.9.2_linux_amd64.tar.gz
-sudo mv ./ks_0.9.2_linux_amd64/ks /usr/local/bin/ks
+mv ./ks_0.9.2_linux_amd64/ks /usr/local/bin/ks
 
 # create namespace if doesn't exist yet
 kubectl create namespace $NAMESPACE || true

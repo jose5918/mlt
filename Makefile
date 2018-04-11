@@ -72,12 +72,12 @@ env-reset: env-down env-up
 # ex: EXTRA_ARGS=`$MLT_REGISTRY_AUTH_COMMAND` make test-e2e-no-docker
 # if you'd like to use something other than localhost:5000, also set
 # MLT_REGISTRY env var and that'll be respected by tox
-test-e2e: docker
+test-e2e: env-up
 	docker-compose exec test ./resources/wait-port.sh kubernetes 8080
 	docker-compose exec test kubectl cluster-info
 	docker-compose exec test pip install tox
-	kubectl get crd | grep tfjobs.kubeflow.org > /dev/null 2>&1 || \
-		docker-compose exec test GITHUB_TOKEN=${GITHUB_TOKEN} ./scripts/kubeflow_install.sh
+	docker-compose exec test bash -c "kubectl get crd | grep tfjobs.kubeflow.org > /dev/null 2>&1 || \
+		GITHUB_TOKEN=${GITHUB_TOKEN} ./scripts/kubeflow_install.sh"
 	docker-compose exec test tox -e py2-e2e -e py3-e2e
 
 test-e2e-no-docker:

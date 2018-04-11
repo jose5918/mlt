@@ -71,7 +71,7 @@ jobs:
             # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
             sudo service docker restart
             # start local registry for use with mlt builds
-            docker run -d -p 5000:5000 --restart=always --name registry registry:2
+            # docker run -d -p 5000:5000 --restart=always --name registry registry:2
             # mlt requires git setup
             # git config --global user.email "test@example.com"
             # git config --global user.name "Test Docker User"
