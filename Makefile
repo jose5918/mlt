@@ -63,7 +63,8 @@ docker:
 env-up: docker
 	docker-compose up -d
 
-env-down: docker-compose down
+env-down:
+	docker-compose down
 
 env-reset: env-down env-up
 
