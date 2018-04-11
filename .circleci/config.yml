@@ -3,7 +3,7 @@ jobs:
   build:
     machine: true
     environment:
-      CHANGE_MINIKUBE_NONE_USER: true
+      # CHANGE_MINIKUBE_NONE_USER: true
       KUBECONFIG: /home/circleci/.kube/config
     working_directory: ~/repo
     # gets around pyenv with circleci: https://discuss.circleci.com/t/testing-in-different-environments/450/12

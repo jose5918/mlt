@@ -5,7 +5,7 @@
 NAMESPACE=kubeflow
 VERSION=v0.1.0-rc.4
 APP_NAME=kubeflow
-# by default we'll use our minikube config
+# by default we'll use our hyperkube config
 : "${KUBECONFIG:=../resources/config.yaml}"
 # workaround for https://github.com/ksonnet/ksonnet/issues/298
 export USER=root
