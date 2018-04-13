@@ -3,7 +3,7 @@
 # install ksonnet + kubeflow so we can support TFJob
 
 NAMESPACE=kubeflow
-VERSION=v0.1.0-rc.4
+VERSION=v0.1.0
 APP_NAME=kubeflow
 # by default we'll use our hyperkube config
 : "${KUBECONFIG:=../resources/config.yaml}"
