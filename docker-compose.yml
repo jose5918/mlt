@@ -13,9 +13,11 @@ services:
       - "etcd"
     privileged: true
     command: "/hyperkube apiserver --insecure-bind-address=0.0.0.0 --etcd-servers=http://etcd:2379 --service-cluster-ip-range=10.0.0.0/16 --storage-backend=etcd2
---storage-media-type=application/json"
+--storage-media-type=application/json --admission-control=NamespaceLifecycle,NamespaceExists,ServiceAccount,LimitRanger,ResourceQuota"
     ports:
       - 8080:8080
+    volumes:
+      - /var/run/kubernetes:/var/run/kubernetes:rw
 
   kubelet:
     image: gcr.io/google_containers/hyperkube-amd64:v1.8.5
@@ -39,7 +41,9 @@ services:
   controller-manager:
     image: gcr.io/google_containers/hyperkube-amd64:v1.8.5
     pid: host
-    command: "/hyperkube controller-manager --master=http://kubernetes:8080 --v=2"
+    volumes:
+      - /var/run/kubernetes:/var/run/kubernetes:rw
+    command: "/hyperkube controller-manager --master=http://kubernetes:8080 --v=2 --service-account-private-key-file=/var/run/kubernetes/apiserver.key --root-ca-file=/var/run/kubernetes/apiserver.crt"
 
   scheduler:
     image: gcr.io/google_containers/hyperkube-amd64:v1.8.5
