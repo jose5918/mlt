@@ -29,4 +29,5 @@ ks registry add kubeflow github.com/kubeflow/kubeflow/tree/$VERSION/kubeflow
 ks pkg install kubeflow/core@$VERSION
 ks pkg install kubeflow/tf-job@$VERSION
 ks generate kubeflow-core kubeflow-core
+ks param set kubeflow-core nocloud
 ks apply default -c kubeflow-core
