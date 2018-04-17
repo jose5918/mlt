@@ -2,8 +2,8 @@ version: 2
 jobs:
   build:
     machine: true
+      docker_layer_caching: true
     environment:
-      # CHANGE_MINIKUBE_NONE_USER: true
       KUBECONFIG: /home/circleci/.kube/config
     working_directory: ~/repo
     # gets around pyenv with circleci: https://discuss.circleci.com/t/testing-in-different-environments/450/12
@@ -53,17 +53,6 @@ jobs:
             sudo mv /tmp/docker/* /usr/bin
             curl -L https://github.com/docker/compose/releases/download/1.16.0/docker-compose-`uname -s`-`uname -m` | sudo tee -a /usr/local/bin/docker-compose > /dev/null
             sudo chmod +x /usr/local/bin/docker-compose
-
-      # - setup_remote_docker:
-      #     docker_layer_caching: true
-
-      # - run:
-      #     name: Setting up hyperkube
-      #     command: |
-      #       # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
-      #       sudo service docker restart
-
-            
             
       - run:
           name: Run e2e tests
