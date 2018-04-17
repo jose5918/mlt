@@ -70,11 +70,9 @@ jobs:
           command: |
             # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
             sudo service docker restart
-            # start local registry for use with mlt builds
-            # docker run -d -p 5000:5000 --restart=always --name registry registry:2
-            # mlt requires git setup
-            # git config --global user.email "test@example.com"
-            # git config --global user.name "Test Docker User"
-            # circleci uses pyenv which won't by default have python3 available
-            # pyenv global 3.5.2
+            # in order for other things to see mounts created by kubelet, need it to be shared
+            mkdir -p /var/lib/kubelet
+            mount -o bind /var/lib/kubelet /var/lib/kubelet
+            mount --make-shared /var/lib/kubelet
+
             make test-e2e

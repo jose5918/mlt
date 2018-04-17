@@ -29,7 +29,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:rw
       - ./resources:/resources:rw
       - /var/lib/docker:/var/lib/docker:rw
-      - /var/lib/kubelet:/var/lib/kubelet:rw
+      - /var/lib/kubelet:/var/lib/kubelet:rw,shared
     command: "/hyperkube kubelet --hostname-override=127.0.0.1 --enable-server --kubeconfig=/resources/config.yaml --v=2 --fail-swap-on=false --cluster-dns=10.0.0.1 --cluster-domain=cluster.local --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice"
 
   proxy:
