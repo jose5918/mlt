@@ -66,16 +66,20 @@ jobs:
 
             # make test-e2e
 
-            sudo apt-get update && sudo apt-get install -y apt-transport-https
-            # install init_system_helpers 1.18 to satisfy kubernetes-xenial on ubuntu 14.04
-            curl http://launchpadlibrarian.net/173841617/init-system-helpers_1.18_all.deb > /tmp/init_system_helpers.deb && sudo dpkg -i /tmp/init_system_helpers.deb
-            curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-            echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee -a /etc/apt/sources.list.d/kubernetes.list > /dev/null
-            sudo apt-get update
-            sudo apt-get install -y kubelet kubeadm
+            # sudo apt-get update && sudo apt-get install -y apt-transport-https
+            # # install init_system_helpers 1.18 to satisfy kubernetes-xenial on ubuntu 14.04
+            # curl http://launchpadlibrarian.net/173841617/init-system-helpers_1.18_all.deb > /tmp/init_system_helpers.deb && sudo dpkg -i /tmp/init_system_helpers.deb
+            # curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+            # echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee -a /etc/apt/sources.list.d/kubernetes.list > /dev/null
+            # sudo apt-get update
+            # sudo apt-get install -y kubelet kubeadm
 
-            kubeadm init --pod-network-cidr=192.168.0.0/16
-            kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml
+            # kubeadm init --pod-network-cidr=192.168.0.0/16
+            # kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml
 
-            kubectl get crd | grep tfjobs.kubeflow.org > /dev/null 2>&1 || \
-              GITHUB_TOKEN=${GITHUB_TOKEN} ./scripts/kubeflow_install.sh
+            # create a cluster in our project
+            gcloud beta container --project "constant-cubist-173123" clusters create "dls-isolation" --zone "us-west1-a" --username "admin" --cluster-version "1.9.6-gke.1" --machine-type "n1-standard-8" --image-type "UBUNTU" --disk-size "100" --scopes "https://www.googleapis.com/auth/cloud-platform" --enable-kubernetes-alpha --num-nodes "3" --network "default" --enable-cloud-logging --enable-cloud-monitoring --subnetwork "default" --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --labels owner=kamkasravi
+
+            make test-e2e
+
+
