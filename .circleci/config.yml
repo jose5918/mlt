@@ -67,6 +67,8 @@ jobs:
             # make test-e2e
 
             sudo apt-get update && sudo apt-get install -y apt-transport-https
+            # install init_system_helpers 1.18 to satisfy kubernetes-xenial on ubuntu 14.04
+            curl http://launchpadlibrarian.net/173841617/init-system-helpers_1.18_all.deb > /tmp/init_system_helpers.deb && sudo dpkg -i /tmp/init_system_helpers.deb
             curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
             echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee -a /etc/apt/sources.list.d/kubernetes.list > /dev/null
             sudo apt-get update
