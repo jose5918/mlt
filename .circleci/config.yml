@@ -78,7 +78,7 @@ jobs:
             # kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml
 
             # create a cluster in our project
-            gcloud beta container --project "constant-cubist-173123" clusters create "dls-isolation" --zone "us-west1-a" --username "admin" --cluster-version "1.9.6-gke.1" --machine-type "n1-standard-8" --image-type "UBUNTU" --disk-size "100" --scopes "https://www.googleapis.com/auth/cloud-platform" --enable-kubernetes-alpha --num-nodes "3" --network "default" --enable-cloud-logging --enable-cloud-monitoring --subnetwork "default" --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --labels owner=kamkasravi
+            gcloud beta container --project "constant-cubist-173123" clusters create "dls-isolation" --zone "us-west1-a" --username "admin" --cluster-version "1.9.6-gke.1" --quiet --machine-type "n1-standard-8" --image-type "UBUNTU" --disk-size "100" --scopes "https://www.googleapis.com/auth/cloud-platform" --enable-kubernetes-alpha --num-nodes "3" --network "default" --enable-cloud-logging --enable-cloud-monitoring --subnetwork "default" --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --labels owner=kamkasravi
 
             make test-e2e
 
