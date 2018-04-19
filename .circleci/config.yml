@@ -8,7 +8,7 @@ jobs:
       MLT_TEST_CLUSTER: mlt-test-cluster$RANDOM
     # gets around pyenv with circleci: https://discuss.circleci.com/t/testing-in-different-environments/450/12
     dependencies:
-    override:
+      override:
       - sudo pip install tox tox-pyenv
       - pyenv local 2.7.12 3.5.2
     working_directory: ~/repo
