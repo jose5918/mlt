@@ -54,7 +54,19 @@ jobs:
             sudo mv /tmp/docker/* /usr/bin
             curl -L https://github.com/docker/compose/releases/download/1.16.0/docker-compose-`uname -s`-`uname -m` | sudo tee -a /usr/local/bin/docker-compose > /dev/null
             sudo chmod +x /usr/local/bin/docker-compose
-            
+
+      - run:
+          name: Create test cluster
+          command: |
+            # create a cluster in our project
+            # TODO: figure out why `--quiet` doesn't work
+            yes | sudo gcloud beta container clusters create "$MLT_TEST_CLUSTER" \
+              --addons=HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --zone "us-west1-a" \
+              --username "admin" --project "constant-cubist-173123" --cluster-version "1.9.6-gke.1" \
+              --quiet --machine-type "n1-standard-8" --image-type "UBUNTU" --disk-size "100" \
+              --scopes "https://www.googleapis.com/auth/cloud-platform" --enable-kubernetes-alpha --num-nodes "3" \
+              --network "default" --enable-cloud-logging --enable-cloud-monitoring --subnetwork "default" --labels owner=robertso
+
       - run:
           name: Run e2e tests
           command: |
@@ -77,14 +89,6 @@ jobs:
 
             # kubeadm init --pod-network-cidr=192.168.0.0/16
             # kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml
-
-            # create a cluster in our project
-            # TODO: figure out why `--quiet` doesn't work
-            yes | sudo gcloud beta container --project "constant-cubist-173123" clusters create "$MLT_TEST_CLUSTER" --zone "us-west1-a" \
-              --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --username "admin" \
-              --cluster-version "1.9.6-gke.1" --quiet --machine-type "n1-standard-8" --image-type "UBUNTU" --disk-size "100" \
-              --scopes "https://www.googleapis.com/auth/cloud-platform" --enable-kubernetes-alpha --num-nodes "3" \
-              --network "default" --enable-cloud-logging --enable-cloud-monitoring --subnetwork "default" --labels owner=robertso
 
             make test-e2e
 
