@@ -5,7 +5,7 @@ jobs:
       docker_layer_caching: true
     environment:
       KUBECONFIG: /home/circleci/.kube/config
-      MLT_TEST_CLUSTER: mlt-test-cluster$RANDOM
+      MLT_TEST_CLUSTER_ENV_FILE: /tmp/mlt_test_cluster
     # gets around pyenv with circleci: https://discuss.circleci.com/t/testing-in-different-environments/450/12
     dependencies:
       override:
@@ -68,11 +68,18 @@ jobs:
             # CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True && gcloud container clusters get-credentials dls-us --zone us-west1-a --project constant-cubist-173123
 
       - run:
+          name: CircleCI workaround; Export MLT_TEST_CLUSTER var
+          command: |
+            echo "export MLT_TEST_CLUSTER=mlt-test-cluster$RANDOM" > $MLT_TEST_CLUSTER_ENV_FILE
+
+      - run:
           name: Create test cluster
           command: |
             # create a cluster in our project
             # TODO: figure out why `--quiet` doesn't work
-            sudo gcloud components update --quiet
+            # sudo gcloud components update --quiet
+            source $MLT_TEST_CLUSTER_ENV_FILE
+            # sudo gcloud auth login
             sudo gcloud beta container clusters create "$MLT_TEST_CLUSTER" \
               --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --zone "us-west1-a" \
               --username "admin" --project "constant-cubist-173123" --cluster-version "1.9.6-gke.1" \
@@ -109,7 +116,7 @@ jobs:
           name: cleanup cluster
           when: always
           command: |
-
+            source $MLT_TEST_CLUSTER_ENV_FILE
             sudo gcloud beta container clusters delete "$MLT_TEST_CLUSTER" --zone "us-west1-a" --project "constant-cubist-173123"
 
 
