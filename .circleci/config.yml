@@ -60,8 +60,9 @@ jobs:
           command: |
             # create a cluster in our project
             # TODO: figure out why `--quiet` doesn't work
-            yes | sudo gcloud beta container clusters create "$MLT_TEST_CLUSTER" \
-              --addons=HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --zone "us-west1-a" \
+            gcloud components update --quiet
+            sudo gcloud beta container clusters create "$MLT_TEST_CLUSTER" \
+              --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --zone "us-west1-a" \
               --username "admin" --project "constant-cubist-173123" --cluster-version "1.9.6-gke.1" \
               --quiet --machine-type "n1-standard-8" --image-type "UBUNTU" --disk-size "100" \
               --scopes "https://www.googleapis.com/auth/cloud-platform" --enable-kubernetes-alpha --num-nodes "3" \
