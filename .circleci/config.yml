@@ -63,7 +63,9 @@ jobs:
             echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
             curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
             sudo apt-get update && sudo apt-get install google-cloud-sdk
-            gcloud init
+            # yes | gcloud init
+            # gcloud auth login
+            # CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True && gcloud container clusters get-credentials dls-us --zone us-west1-a --project constant-cubist-173123
 
       - run:
           name: Create test cluster
@@ -107,6 +109,7 @@ jobs:
           name: cleanup cluster
           when: always
           command: |
+
             sudo gcloud beta container clusters delete "$MLT_TEST_CLUSTER" --zone "us-west1-a" --project "constant-cubist-173123"
 
 
