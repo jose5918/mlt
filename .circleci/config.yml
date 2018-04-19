@@ -9,8 +9,8 @@ jobs:
     machine:
       docker_layer_caching: true
     environment:
-      - KUBECONFIG: /home/circleci/.kube/config
-      - MLT_TEST_CLUSTER: 'mlt-test-cluster'$RANDOM
+      KUBECONFIG: /home/circleci/.kube/config
+      MLT_TEST_CLUSTER: mlt-test-cluster$RANDOM
     working_directory: ~/repo
     steps:
       - checkout
