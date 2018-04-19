@@ -60,7 +60,7 @@ jobs:
           command: |
             # create a cluster in our project
             # TODO: figure out why `--quiet` doesn't work
-            gcloud components update --quiet
+            sudo gcloud components update --quiet
             sudo gcloud beta container clusters create "$MLT_TEST_CLUSTER" \
               --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --zone "us-west1-a" \
               --username "admin" --project "constant-cubist-173123" --cluster-version "1.9.6-gke.1" \
