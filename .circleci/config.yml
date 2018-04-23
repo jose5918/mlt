@@ -66,12 +66,11 @@ jobs:
           name: Install gcloud
           command: |
             # taking install from https://cloud.google.com/sdk/downloads#apt-get
-            apt-get update
-            apt-get install lsb_release
-            export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+            # hardcoding to cloud-sdk-xenial because lsb_release not found
+            export CLOUD_SDK_REPO="cloud-sdk-xenial"
             echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
             curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-            apt-get update && apt-get install google-cloud-sdk
+            apt-get update && apt-get install -y google-cloud-sdk
             # yes | gcloud init
             # gcloud auth login
             # CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True && gcloud container clusters get-credentials dls-us --zone us-west1-a --project constant-cubist-173123
@@ -93,7 +92,7 @@ jobs:
             # gcloud container clusters list --project intelai-mlt
             # gcloud auth login
             gcloud --project intelai-mlt beta container clusters create "$MLT_TEST_CLUSTER" \
-            --zone --cluster-version "1.9.6-gke.1"
+            --zone "us-west1-a" --cluster-version "1.9.6-gke.1"
             echo "Configuring kubectl"
             gcloud --project ${PROJECT} container clusters get-credentials ${CLUSTER_NAME} \
             --zone "us-west1-a"
