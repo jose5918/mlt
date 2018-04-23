@@ -10,7 +10,6 @@ jobs:
     environment:
       KUBECONFIG: /home/circleci/.kube/config
       MLT_TEST_CLUSTER_ENV_FILE: /tmp/mlt_test_cluster
-      GITHUB_TOKEN: 2de577dd5416a14fc7614601bbb6f01fed8f9670
     # gets around pyenv with circleci: https://discuss.circleci.com/t/testing-in-different-environments/450/12
     dependencies:
       override:
@@ -144,6 +143,6 @@ jobs:
           when: always
           command: |
             source $MLT_TEST_CLUSTER_ENV_FILE
-            gcloud beta container clusters delete "$MLT_TEST_CLUSTER" --zone "us-west1-a" --project "intelai-mlt"
+            yes | gcloud beta container clusters delete "$MLT_TEST_CLUSTER" --zone "us-west1-a" --project "intelai-mlt"
 
 
