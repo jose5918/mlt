@@ -50,10 +50,10 @@ services:
 #     pid: host
 #     command: "/hyperkube scheduler --master=http://kubernetes:8080 --v=2"
 
-  registry:
-    image: "registry:2"
-    ports:
-      - 5000:5000
+  # registry:
+  #   image: "registry:2"
+  #   ports:
+  #     - 5000:5000
 
   test:
     image: "mlt"
