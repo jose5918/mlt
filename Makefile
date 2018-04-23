@@ -80,7 +80,7 @@ test-e2e: env-up
 	# docker-compose exec test kubectl cluster-info
 	docker-compose exec test pip install tox
 	# docker-compose exec test bash -c "kubectl get crd | grep tfjobs.kubeflow.org > /dev/null 2>&1 || \
-		GITHUB_TOKEN=${GITHUB_TOKEN} ./scripts/kubeflow_install.sh"
+	#	GITHUB_TOKEN=${GITHUB_TOKEN} ./scripts/kubeflow_install.sh"
 	docker-compose exec test tox -e py2-e2e -e py3-e2e
 
 test-e2e-no-docker:
