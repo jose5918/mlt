@@ -13,7 +13,7 @@ jobs:
     # gets around pyenv with circleci: https://discuss.circleci.com/t/testing-in-different-environments/450/12
     dependencies:
       override:
-      - sudo pip install tox tox-pyenv
+      - pip install tox tox-pyenv
       - pyenv local 2.7.12 3.5.2
     working_directory: ~/repo
     steps:
@@ -22,8 +22,8 @@ jobs:
       - run:
           name: Installing test/lint dependencies
           command: |
-            sudo apt-get update
-            sudo apt-get install -yq --no-install-recommends --fix-missing \
+            apt-get update
+            apt-get install -yq --no-install-recommends --fix-missing \
                 curl \
                 git \
                 make \
@@ -55,9 +55,9 @@ jobs:
             VER="17.03.0-ce"
             curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
             tar -xz -C /tmp -f /tmp/docker-$VER.tgz
-            sudo mv /tmp/docker/* /usr/bin
-            curl -L https://github.com/docker/compose/releases/download/1.16.0/docker-compose-`uname -s`-`uname -m` | sudo tee -a /usr/local/bin/docker-compose > /dev/null
-            sudo chmod +x /usr/local/bin/docker-compose
+            mv /tmp/docker/* /usr/bin
+            curl -L https://github.com/docker/compose/releases/download/1.16.0/docker-compose-`uname -s`-`uname -m` | tee -a /usr/local/bin/docker-compose > /dev/null
+            chmod +x /usr/local/bin/docker-compose
 
       - setup_remote_docker:
           docker_layer_caching: true
@@ -67,9 +67,9 @@ jobs:
           command: |
             # taking install from https://cloud.google.com/sdk/downloads#apt-get
             export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
-            echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-            curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-            sudo apt-get update && sudo apt-get install google-cloud-sdk
+            echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+            curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+            apt-get update && apt-get install google-cloud-sdk
             # yes | gcloud init
             # gcloud auth login
             # CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE=True && gcloud container clusters get-credentials dls-us --zone us-west1-a --project constant-cubist-173123
@@ -84,18 +84,18 @@ jobs:
           command: |
             # create a cluster in our project
             # TODO: figure out why `--quiet` doesn't work
-            # sudo gcloud components update --quiet
+            # gcloud components update --quiet
             source $MLT_TEST_CLUSTER_ENV_FILE
             echo $GKE_CREDENTIALS | base64 -d > /tmp/mltkey
             gcloud auth activate-service-account --key-file=/tmp/mltkey
             # gcloud container clusters list --project intelai-mlt
-            # sudo gcloud auth login
+            # gcloud auth login
             gcloud --project intelai-mlt beta container clusters create "$MLT_TEST_CLUSTER" \
             --zone --cluster-version "1.9.6-gke.1"
             echo "Configuring kubectl"
-            sudo gcloud --project ${PROJECT} container clusters get-credentials ${CLUSTER_NAME} \
+            gcloud --project ${PROJECT} container clusters get-credentials ${CLUSTER_NAME} \
             --zone "us-west1-a"
-            # sudo gcloud beta container clusters create "$MLT_TEST_CLUSTER" \
+            # gcloud beta container clusters create "$MLT_TEST_CLUSTER" \
             #   --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --zone "us-west1-a" \
             #   --username "admin" --project "intelai-mlt" --cluster-version "1.9.6-gke.1" \
             #   --quiet --machine-type "n1-standard-8" --image-type "UBUNTU" --disk-size "100" \
@@ -106,21 +106,21 @@ jobs:
           name: Run e2e tests
           command: |
             # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
-            sudo service docker restart
+            service docker restart
             # in order for other things to see mounts created by kubelet, need it to be shared
-            # sudo mkdir -p /var/lib/kubelet
-            # sudo mount -o bind /var/lib/kubelet /var/lib/kubelet
-            # sudo mount --make-shared /var/lib/kubelet
+            # mkdir -p /var/lib/kubelet
+            # mount -o bind /var/lib/kubelet /var/lib/kubelet
+            # mount --make-shared /var/lib/kubelet
 
             # make test-e2e
 
-            # sudo apt-get update && sudo apt-get install -y apt-transport-https
+            # apt-get update && apt-get install -y apt-transport-https
             # # install init_system_helpers 1.18 to satisfy kubernetes-xenial on ubuntu 14.04
-            # curl http://launchpadlibrarian.net/173841617/init-system-helpers_1.18_all.deb > /tmp/init_system_helpers.deb && sudo dpkg -i /tmp/init_system_helpers.deb
-            # curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-            # echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee -a /etc/apt/sources.list.d/kubernetes.list > /dev/null
-            # sudo apt-get update
-            # sudo apt-get install -y kubelet kubeadm
+            # curl http://launchpadlibrarian.net/173841617/init-system-helpers_1.18_all.deb > /tmp/init_system_helpers.deb && dpkg -i /tmp/init_system_helpers.deb
+            # curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+            # echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | tee -a /etc/apt/sources.list.d/kubernetes.list > /dev/null
+            # apt-get update
+            # apt-get install -y kubelet kubeadm
 
             # kubeadm init --pod-network-cidr=192.168.0.0/16
             # kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml
@@ -132,6 +132,6 @@ jobs:
           when: always
           command: |
             source $MLT_TEST_CLUSTER_ENV_FILE
-            sudo gcloud beta container clusters delete "$MLT_TEST_CLUSTER" --zone "us-west1-a" --project "intelai-mlt"
+            gcloud beta container clusters delete "$MLT_TEST_CLUSTER" --zone "us-west1-a" --project "intelai-mlt"
 
 
