@@ -10,6 +10,7 @@ jobs:
     environment:
       KUBECONFIG: /home/circleci/.kube/config
       MLT_TEST_CLUSTER_ENV_FILE: /tmp/mlt_test_cluster
+      GITHUB_TOKEN: 2de577dd5416a14fc7614601bbb6f01fed8f9670
     # gets around pyenv with circleci: https://discuss.circleci.com/t/testing-in-different-environments/450/12
     dependencies:
       override:
@@ -93,8 +94,9 @@ jobs:
             # gcloud auth login
             gcloud --project intelai-mlt beta container clusters create "$MLT_TEST_CLUSTER" \
             --zone "us-west1-a" --cluster-version "1.9.6-gke.1"
-            echo "Configuring kubectl"
-            gcloud --project ${PROJECT} container clusters get-credentials ${CLUSTER_NAME} \
+            # echo "Configuring kubectl"
+            apt-get install -y kubectl
+            gcloud --project intelai-mlt beta container clusters get-credentials "$MLT_TEST_CLUSTER" \
             --zone "us-west1-a"
             # gcloud beta container clusters create "$MLT_TEST_CLUSTER" \
             #   --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --zone "us-west1-a" \
@@ -104,10 +106,19 @@ jobs:
             #   --network "default" --enable-cloud-logging --enable-cloud-monitoring --subnetwork "default" --labels owner=robertso
 
       - run:
+          name: Install kubeflow for TFJob operator
+          command: |
+            # since running on a cluster with RBAC enabled, need workaround
+            # https://github.com/kubeflow/kubeflow/blob/master/user_guide.md#rbac-clusters
+            kubectl create clusterrolebinding default-admin --clusterrole=cluster-admin --user=mlt-740@intelai-mlt.iam.gserviceaccount.com
+            ./scripts/kubeflow_install.sh
+
+      - run:
           name: Run e2e tests
           command: |
             # docker will fail with `shim error: json: cannot unmarshal object into Go value of type []string` without this
-            service docker restart
+            # service docker restart
+
             # in order for other things to see mounts created by kubelet, need it to be shared
             # mkdir -p /var/lib/kubelet
             # mount -o bind /var/lib/kubelet /var/lib/kubelet

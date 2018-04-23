@@ -6,7 +6,8 @@ NAMESPACE=kubeflow
 VERSION=v0.1.0
 APP_NAME=kubeflow
 # by default we'll use our hyperkube config
-: "${KUBECONFIG:=../resources/config.yaml}"
+# TODO: delete the hyperkube config
+# : "${KUBECONFIG:=../resources/config.yaml}"
 # workaround for https://github.com/ksonnet/ksonnet/issues/298
 export USER=root
 
