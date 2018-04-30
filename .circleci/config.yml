@@ -41,6 +41,11 @@ jobs:
             make test
 
       - run:
+          name: Template version generation
+          command: |
+            make template-version
+
+      - run:
           name: Run make dist and test the wheels and versions
           command: |
             make dist
