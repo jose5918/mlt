@@ -100,7 +100,7 @@ release: dist
 		echo "~/.pypirc not found" ; \
 	fi;
 
-dummy:
+dummy: venv
 	git diff master --name-only -- ./mlt-templates
 	if [ `git diff master --name-only -- ./mlt-templates | wc -l` -gt 0  ]; then \
 		echo "changes detected re-generate temaplte version file" ; \
