@@ -104,7 +104,7 @@ template-version:
 	# List files changed
 	git diff master --name-only -- ./mlt-templates
 	if [ `git diff master --name-only -- ./mlt-templates | wc -l` -gt 0  ]; then \
-		python mlt-templates/generate_versions.py $PWD/mlt-templates  ; \
+		python mlt-templates/generate_versions.py $(CURDIR)/mlt-templates  ; \
 	else \
 		echo "No changes detected skipping tamplate version generation script" ; \
 	fi;
