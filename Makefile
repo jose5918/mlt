@@ -99,3 +99,7 @@ release: dist
 	else \
 		echo "~/.pypirc not found" ; \
 	fi;
+
+dummy:
+	git branch
+	git diff master --name-only
