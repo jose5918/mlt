@@ -29,7 +29,7 @@ def main():
         sha_dict = dict()
         command = "git rev-list HEAD -- {0}".format(os.path.join(mlt_template_dir,filename))
 
-        # TODO: investigate if this guarantees the order
+        # TODO: investigate if split() function guarantees the order
         output = run(command.split(" "))
         v = len(output.strip().split("\n"))
         for sha in output.strip().split("\n"):
