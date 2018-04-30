@@ -39,6 +39,10 @@ jobs:
           name: Run unit tests
           command: |
             make test
+      - run:
+          name: Dummy
+          command: |
+            make dummy
 
       - run:
           name: Run make dist and test the wheels and versions
