@@ -1,7 +1,8 @@
 import yaml
 import sys
 import os
-from subprocess import check_output, CalledProcessError, Popen, PIPE
+from subprocess import check_output, CalledProcessError
+
 
 def run(command, cwd=None):
     try:
@@ -10,6 +11,7 @@ def run(command, cwd=None):
         print(e.output)
         sys.exit(1)
     return output
+
 
 def main():
     if len(sys.argv) != 2:
