@@ -102,7 +102,7 @@ release: dist
 
 dummy: venv
 	@. $(ACTIVATE); pip freeze; python -c "import yaml" ; \
-	git diff master --name-only -- ./mlt-templates \
+	git diff master --name-only -- ./mlt-templates ;  \
 	if [ `git diff master --name-only -- ./mlt-templates | wc -l` -gt 0  ]; then \
 		echo "changes detected re-generate temaplte version file" ; \
 		python mlt-templates/generate_versions.py $(CURDIR)/mlt-templates  ; \
