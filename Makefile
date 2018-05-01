@@ -104,8 +104,9 @@ template-version:
 	@. $(ACTIVATE);  \
 	git diff master --name-only -- ./mlt-templates ; \
 	if [ `git diff master --name-only -- ./mlt-templates | wc -l` -gt 0  ]; then \
-	    echo "Changes detected in templates, regenerating template versions" ; \
+		echo "Changes detected in templates, regenerating template versions" ; \
 		python mlt-templates/generate_versions.py $(CURDIR)/mlt-templates  ; \
+		cat ./mlt-templates/template_versions.yml ; \
 	else \
 		echo "No changes detected skipping tamplate version generation script" ; \
 	fi;
