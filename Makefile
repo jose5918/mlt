@@ -101,8 +101,8 @@ release: dist
 	fi;
 
 dummy: venv
+	@. $(ACTIVATE);
 	git diff master --name-only -- ./mlt-templates
-	. $(ACTIVATE);
 	pip freeze
 	python -c "import yaml"
 	if [ `git diff master --name-only -- ./mlt-templates | wc -l` -gt 0  ]; then \
