@@ -30,7 +30,6 @@ Usage:
   mlt deploy [--no-push] [-i | --interactive]
       [--retries=<retries>] [--skip-crd-check] [<kube_spec>]
   mlt (ksync) (create | delete | doctor | get | version | watch)
-      [--log-level <info|debug>]
   mlt undeploy
   mlt (template | templates) list [--template-repo=<repo>]
 

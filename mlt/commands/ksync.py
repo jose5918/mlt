@@ -18,17 +18,25 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
+
+import sys
+
 from subprocess import Popen, PIPE
 from termcolor import colored
 
 from mlt.commands import Command
 from mlt.utils import (config_helpers, localhost_helpers)
-from mlt.utils.constants import KSYNC
+from mlt.utils.constants import (KSYNC, KSYNC_GET_APIS, KSYNC_SET_APIS)
 
 
 class KsyncCommand(Command):
     def __init__(self, args):
         super(KsyncCommand, self).__init__(args)
+        if not localhost_helpers.check_local_install(KSYNC):
+            error_msg = "{} is not installed locally!".format(KSYNC)
+            print(colored(error_msg.decode("utf-8"), 'red'))
+            sys.exit(1)
+
         self.config = config_helpers.load_config()
 
     def action(self):
@@ -43,19 +51,26 @@ class KsyncCommand(Command):
            watch       Watch configured specs and start syncing files when
                        required.
         """
-        print (self.args)
-        self._ksync(self.args[1]) if self.args['doctor'] or self.args['get'] \
-            or self.args['version'] else self.args
+        for api in KSYNC_GET_APIS:
+            if self.args[api]:
+                self._ksync_get(api)
+                break
 
-    def _ksync(self, subcommand):
-        if localhost_helpers.check_local_install(self.program):
-            p = Popen([KSYNC, subcommand], stdin=PIPE, stdout=PIPE,
-                      stderr=PIPE)
-            output, err = p.communicate()
-            if not p.returncode:
-                print(output.decode("utf-8"))
-            else:
-                print(colored(err.decode("utf-8"), 'red'))
+        for api in KSYNC_SET_APIS:
+            if self.args[api]:
+                self._ksync_set(api)
+                break
+
+    def _ksync_get(self, subcommand):
+        # TODO: We need to make this call asyncronous,
+        # I've done this in the past
+        p = Popen([KSYNC, subcommand], stdin=PIPE, stdout=PIPE,
+                  stderr=PIPE)
+        output, err = p.communicate()
+        if not p.returncode:
+            print(output.decode("utf-8"))
         else:
-            error_msg = "{} is not installed locally!".format(self.program)
-            print(colored(error_msg.decode("utf-8"), 'red'))
+            print(colored(err.decode("utf-8"), 'red'))
+
+    def _ksync_set(self, subcommand):
+        print("Not Implemented Yet!")
