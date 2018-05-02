@@ -28,6 +28,8 @@ Usage:
   mlt build [--watch]
   mlt deploy [--no-push] [-i | --interactive]
       [--retries=<retries>] [--skip-crd-check] [<kube_spec>]
+  mlt ksync (create | delete | doctor | get | version | watch)
+      [--log-level <info|debug>]
   mlt undeploy
   mlt (template | templates) list [--template-repo=<repo>]
 
@@ -63,7 +65,7 @@ import mlt
 from docopt import docopt
 
 from mlt.commands import (BuildCommand, DeployCommand, InitCommand,
-                          TemplatesCommand, UndeployCommand)
+                          KsyncCommand, TemplatesCommand, UndeployCommand)
 from mlt.utils import regex_checks
 
 # every available command and its corresponding action will go here
@@ -71,6 +73,7 @@ COMMAND_MAP = (
     ('build', BuildCommand),
     ('deploy', DeployCommand),
     ('init', InitCommand),
+    ('ksync', KsyncCommand),
     ('template', TemplatesCommand),
     ('templates', TemplatesCommand),
     ('undeploy', UndeployCommand),
