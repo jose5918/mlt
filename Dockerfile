@@ -54,7 +54,7 @@ RUN mv ./kubectl /usr/local/bin/kubectl
 COPY ./resources/config.yaml /root/.kube/config
 
 ENV NAMESPACE kubeflow
-ENV VERSION v0.1.3
+ENV VERSION 3920d1402f40455c0f3e5f54ea4cc8142c23c2c8
 ENV APP_NAME kubeflow
 ENV KUBECONFIG /root/.kube/config
 # workaround for https://github.com/ksonnet/ksonnet/issues/298
