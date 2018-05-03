@@ -76,7 +76,7 @@ RUN ks pkg install kubeflow/core@$VERSION
 RUN ks pkg install kubeflow/tf-job@$VERSION
 RUN ks pkg install kubeflow/pytorch-job@$VERSION
 RUN ks generate kubeflow-core kubeflow-core
-RUN ks generate pytorch-job pytorch-job
+RUN ks generate pytorch-operator pytorch-operator
 
 ADD . /usr/share/mlt
 
