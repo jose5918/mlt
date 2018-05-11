@@ -62,12 +62,12 @@ jobs:
       - run:
           name: Install gcloud
           command: |
-            # taking install from https://cloud.google.com/sdk/downloads#apt-get
-            # hardcoding to cloud-sdk-xenial because lsb_release not found
-            export CLOUD_SDK_REPO="cloud-sdk-xenial"
-            echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-            curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-            apt-get update && apt-get install -y google-cloud-sdk
+            GCLOUD_SDK_VERSION="197.0.0"
+            curl -sSLo google-cloud-sdk.tar.gz https://storage.googleapis.com/cloud-sdk-release/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz \
+            && tar zxf google-cloud-sdk.tar.gz \
+            && rm google-cloud-sdk.tar.gz \
+            && ./google-cloud-sdk/install.sh --usage-reporting=true --path-update=true \
+            && ln -s /google-cloud-sdk/bin/gcloud /usr/local/bin/
       - run:
           name: Create test cluster
           command: |
