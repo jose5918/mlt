@@ -66,9 +66,8 @@ jobs:
             curl -sSLo google-cloud-sdk.tar.gz https://storage.googleapis.com/cloud-sdk-release/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz \
             && tar zxf google-cloud-sdk.tar.gz \
             && rm google-cloud-sdk.tar.gz \
-            && ./google-cloud-sdk/install.sh --usage-reporting=true --path-update=true \
-            && ln -s /google-cloud-sdk/bin/gcloud /usr/local/bin/
-            echo 'export PATH=/usr/local/bin/:$PATH' >> $BASH_ENV
+            && ./google-cloud-sdk/install.sh --usage-reporting=true --path-update=true
+            echo "export PATH=$PATH:$PWD/google-cloud-sdk/bin/gcloud" >> $BASH_ENV
             source $BASH_ENV
             echo $PATH
             gcloud component install beta
