@@ -65,7 +65,6 @@ jobs:
             # taking install from https://cloud.google.com/sdk/downloads#apt-get
             # hardcoding to cloud-sdk-xenial because lsb_release not found
             export CLOUD_SDK_REPO="cloud-sdk-xenial"
-            pip install pyopenssl
             echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
             curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
             apt-get update && apt-get install -y google-cloud-sdk
@@ -73,8 +72,8 @@ jobs:
           name: Create test cluster
           command: |
             export MLT_TEST_CLUSTER="mlt-test-cluster$CIRCLE_BUILD_NUM"
-            echo $GKE_CREDENTIALS | base64 -d > /tmp/mltkey
-            gcloud auth activate-service-account mlt-740@intelai-mlt.iam.gserviceaccount.com --key-file=/tmp/mltkey
+            echo $GKE_CREDENTIALS | base64 -d > /tmp/mltkey.json
+            gcloud auth activate-service-account mlt-740@intelai-mlt.iam.gserviceaccount.com --key-file=/tmp/mltkey.json
             gcloud --project intelai-mlt beta container clusters create "$MLT_TEST_CLUSTER" \
             --zone "us-west1-a" --cluster-version "1.9.6-gke.1"
             apt-get install -y kubectl
