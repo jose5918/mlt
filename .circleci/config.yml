@@ -3,8 +3,14 @@ jobs:
   build:
     docker:
       - image: ubuntu:16.04
-      - image: registry:2
-        name: registry
+    environment:
+      KUBECONFIG: /home/circleci/.kube/config
+      MLT_TEST_CLUSTER_ENV_FILE: /tmp/mlt_test_cluster
+    # gets around pyenv with circleci: https://discuss.circleci.com/t/testing-in-different-environments/450/12
+    dependencies:
+      override:
+      - pip install tox tox-pyenv
+      - pyenv local 2.7.12 3.5.2
     working_directory: ~/repo
     steps:
       - checkout
@@ -12,7 +18,6 @@ jobs:
       - run:
           name: Installing test/lint dependencies
           command: |
-            # get python3 for tox
             apt-get update
             apt-get install -yq --no-install-recommends --fix-missing \
                 curl \
@@ -28,17 +33,16 @@ jobs:
                 python3-setuptools \
                 python3-wheel \
                 tar
-            python3 -m pip install tox
 
-      - run:
-          name: lint tests
-          command: |
-            make lint
+    #   - run:
+    #       name: lint tests
+    #       command: |
+    #         make lint
 
-      - run:
-          name: Run unit tests
-          command: |
-            make test
+    #   - run:
+    #       name: Run unit tests
+    #       command: |
+    #         make test
 
       - run:
           name: Run make dist and test the wheels and versions
@@ -63,7 +67,6 @@ jobs:
                 exit 1
             fi
             deactivate
-
       - run:
           name: Installing docker dependencies
           command: |
@@ -72,13 +75,47 @@ jobs:
             curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
             tar -xz -C /tmp -f /tmp/docker-$VER.tgz
             mv /tmp/docker/* /usr/bin
-            curl -L https://github.com/docker/compose/releases/download/1.16.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+            curl -L https://github.com/docker/compose/releases/download/1.16.0/docker-compose-`uname -s`-`uname -m` | tee -a /usr/local/bin/docker-compose > /dev/null
             chmod +x /usr/local/bin/docker-compose
 
       - setup_remote_docker:
           docker_layer_caching: true
 
       - run:
+          name: Install gcloud
+          command: |
+            # taking install from https://cloud.google.com/sdk/downloads#apt-get
+            # hardcoding to cloud-sdk-xenial because lsb_release not found
+            export CLOUD_SDK_REPO="cloud-sdk-xenial"
+            echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+            curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+            apt-get update && apt-get install -y google-cloud-sdk
+      - run:
+          name: Create test cluster
+          command: |
+            export MLT_TEST_CLUSTER="mlt-test-cluster$CIRCLE_BUILD_NUM"
+            echo $GKE_CREDENTIALS | base64 -d > /tmp/mltkey
+            gcloud auth activate-service-account --key-file=/tmp/mltkey
+            gcloud --project intelai-mlt beta container clusters create "$MLT_TEST_CLUSTER" \
+            --zone "us-west1-a" --cluster-version "1.9.6-gke.1"
+            apt-get install -y kubectl
+            gcloud --project intelai-mlt beta container clusters get-credentials "$MLT_TEST_CLUSTER" \
+            --zone "us-west1-a"
+      - run:
+          name: Install kubeflow
+          command: |
+            # since running on a cluster with RBAC enabled, need workaround
+            # https://github.com/kubeflow/kubeflow/blob/master/user_guide.md#rbac-clusters
+            kubectl create clusterrolebinding default-admin --clusterrole=cluster-admin --user=mlt-740@intelai-mlt.iam.gserviceaccount.com
+            ./scripts/kubeflow_install.sh
+
+      - run:
           name: Run e2e tests
           command: |
             make test-e2e
+      - run:
+          name: cleanup cluster
+          when: always
+          command: |
+            export MLT_TEST_CLUSTER="mlt-test-cluster$CIRCLE_BUILD_NUM"
+            gcloud beta container clusters delete "$MLT_TEST_CLUSTER" --zone "us-west1-a" --project "intelai-mlt" --quiet
