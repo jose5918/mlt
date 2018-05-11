@@ -68,6 +68,8 @@ jobs:
             && rm google-cloud-sdk.tar.gz \
             && ./google-cloud-sdk/install.sh --usage-reporting=true --path-update=true \
             && ln -s /google-cloud-sdk/bin/gcloud /usr/local/bin/
+            source ~/.bashrc
+            gcloud component install beta
       - run:
           name: Create test cluster
           command: |
