@@ -73,7 +73,7 @@ jobs:
           command: |
             export MLT_TEST_CLUSTER="mlt-test-cluster$CIRCLE_BUILD_NUM"
             echo $GKE_CREDENTIALS | base64 -d > /tmp/mltkey.json
-            gcloud auth activate-service-account mlt-740@intelai-mlt.iam.gserviceaccount.com --key-file=/tmp/mltkey.json
+            gcloud auth activate-service-account mltjson@intelai-mlt.iam.gserviceaccount.com --key-file=/tmp/mltkey.json
             gcloud --project intelai-mlt beta container clusters create "$MLT_TEST_CLUSTER" \
             --zone "us-west1-a" --cluster-version "1.9.6-gke.1"
             apt-get install -y kubectl
@@ -84,7 +84,7 @@ jobs:
           command: |
             # since running on a cluster with RBAC enabled, need workaround
             # https://github.com/kubeflow/kubeflow/blob/master/user_guide.md#rbac-clusters
-            kubectl create clusterrolebinding default-admin --clusterrole=cluster-admin --user=mlt-740@intelai-mlt.iam.gserviceaccount.com
+            kubectl create clusterrolebinding default-admin --clusterrole=cluster-admin --user=mltjson@intelai-mlt.iam.gserviceaccount.com
             ./scripts/kubeflow_install.sh
 
       - run:
