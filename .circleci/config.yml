@@ -72,9 +72,8 @@ jobs:
           name: Create test cluster
           command: |
             export MLT_TEST_CLUSTER="mlt-test-cluster$CIRCLE_BUILD_NUM"
-            echo $GKE_CREDENTIALS | base64 -d > /tmp/mltkey.json
-            sleep 1000
-            ./google-cloud-sdk/bin/gcloud auth activate-service-account mltjson@intelai-mlt.iam.gserviceaccount.com --key-file=/tmp/mltkey.json
+            echo $GKE_CREDENTIALS | base64 -d > mltkey.json
+            ./google-cloud-sdk/bin/gcloud auth activate-service-account mltjson@intelai-mlt.iam.gserviceaccount.com --key-file=mltkey.json
             ./google-cloud-sdk/bin/gcloud --project intelai-mlt beta container clusters create "$MLT_TEST_CLUSTER" \
             --zone "us-west1-a" --cluster-version "1.9.6-gke.1"
             apt-get install -y kubectl
