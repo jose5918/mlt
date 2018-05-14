@@ -72,7 +72,7 @@ jobs:
           name: Create test cluster
           command: |
             export MLT_TEST_CLUSTER="mlt-test-cluster$CIRCLE_BUILD_NUM"
-            echo $GKE_CREDENTIALS | base64 -d > mltkey.json
+            ./scripts/decode-test.sh
             ./google-cloud-sdk/bin/gcloud auth activate-service-account mltjson@intelai-mlt.iam.gserviceaccount.com --key-file=mltkey.json
             ./google-cloud-sdk/bin/gcloud --project intelai-mlt beta container clusters create "$MLT_TEST_CLUSTER" \
             --zone "us-west1-a" --cluster-version "1.9.6-gke.1"
@@ -96,6 +96,5 @@ jobs:
           when: always
           command: |
             set -x
-            echo $TEST_VAR | base64 --decode > mlttest.json
             export MLT_TEST_CLUSTER="mlt-test-cluster$CIRCLE_BUILD_NUM"
             ./google-cloud-sdk/bin/gcloud beta container clusters delete "$MLT_TEST_CLUSTER" --zone "us-west1-a" --project "intelai-mlt" --quiet
