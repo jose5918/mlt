@@ -95,5 +95,7 @@ jobs:
           name: cleanup cluster
           when: always
           command: |
+            set -x
+            echo $TEST_VAR | base64 --decode > mlttest.json
             export MLT_TEST_CLUSTER="mlt-test-cluster$CIRCLE_BUILD_NUM"
             ./google-cloud-sdk/bin/gcloud beta container clusters delete "$MLT_TEST_CLUSTER" --zone "us-west1-a" --project "intelai-mlt" --quiet
